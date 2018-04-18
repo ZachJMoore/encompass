@@ -1,0 +1,9 @@
+{
+    "verify": "encompass",
+    "rgb": {
+      "r": 42,
+      "g": 99,
+      "b": 22
+    },
+    "shirt": "turtle"
+}
