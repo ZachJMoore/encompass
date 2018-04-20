@@ -1,8 +1,9 @@
 {
-  "name": "encompass-0.2.0_alpha",
+  "name": "encompass-0.3.0_alpha",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "color-scheme": "^1.0.0",
     "instascan": "^1.0.0",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",

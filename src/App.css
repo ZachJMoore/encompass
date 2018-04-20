@@ -1,3 +1,8 @@
+.app{
+  align-self: stretch;
+  padding: 0 0 65px 0;
+}
+
 /* viewport */
 
 .viewport-container{
@@ -16,6 +21,7 @@
   position: fixed;
   top: 10px;
   right: 10px;
+  cursor: pointer;
 }
 
 .viewport-change-camera:focus {
@@ -28,6 +34,7 @@
 
 .viewport{
   border-radius: 0 0 15px 15px;
+  max-width: 92%;
 }
 
 .viewport-shutter{
@@ -41,6 +48,7 @@
   border-radius: 100%;
   margin-top: -86px;
   margin-bottom: calc(86px - 66px);
+  cursor: pointer;
 }
 
 .viewport-shutter:focus {
@@ -86,7 +94,7 @@
 /* color palette */
 
 .color-palette-container{
-  margin: 5px 0
+  margin: 5px 0;
 }
 
 .color-palette-swatch{

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
-import Camera from "./components/Camera"
+import Camera from "./components/Camera";
+let ColorScheme = require("color-scheme");
 
 class App extends Component {
   constructor(props){
@@ -21,30 +22,37 @@ class App extends Component {
       this.setState({colorPalette: array})
     }
 
-    this.getColorMindPalette = (r, g, b)=>{
+    this.getPalette = (hex)=>{
       return new Promise((res, rej)=>{
 
-        let url = "http://colormind.io/api/"
-        let data = {
-          model: "ui",
-          input: [
-            "N",
-            "N",
-            [r, g, b],
-            "N",
-            "N"
-          ]
-        }
-        fetch(url, {
-          body: JSON.stringify(data),
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          method: "POST"
-        })
-        .then(res=>res.json())
-        .then(data=>res(data))
-        .catch(err=>rej(err))
+        let scheme = new ColorScheme();
+        scheme.from_hex(hex)
+        console.log(scheme.colors())
+        res(scheme.colors())
+
+
+
+        // let url = "http://colormind.io/api/"
+        // let data = {
+        //   model: "ui",
+        //   input: [
+        //     "N",
+        //     "N",
+        //     [r, g, b],
+        //     "N",
+        //     "N"
+        //   ]
+        // }
+        // fetch(url, {
+        //   body: JSON.stringify(data),
+        //   headers: {
+        //     "Content-Type": "application/x-www-form-urlencoded"
+        //   },
+        //   method: "POST"
+        // })
+        // .then(res=>res.json())
+        // .then(data=>res(data))
+        // .catch(err=>rej(err))
 
       })
       
@@ -54,10 +62,10 @@ class App extends Component {
 
   render() {
     return (
-      <div className="App flex-container full-width column">
+      <div className="app flex-container full-width column" style={{"background":`linear-gradient(145deg, #${this.state.colorPalette[0]}, #${this.state.colorPalette[2]})`}}>
 
         <section className="viewport-container flex-container flex-strech">
-          <Camera updateState={this.updateState} getColorMindPalette={this.getColorMindPalette} updateColorPalette={this.updateColorPalette} />
+          <Camera updateState={this.updateState} getPalette={this.getPalette} updateColorPalette={this.updateColorPalette} />
         </section>
 
         <section className="captured-image-container flex-container flex-strech column">
@@ -70,10 +78,10 @@ class App extends Component {
         </section>
 
         <section className="color-palette-container flex-container flex-strech column">
-          {this.state.colorPalette.length !== 0 && <p className="info-tag">Suggested colors to match with</p>}
+          {this.state.colorPalette.length !== 0 && <p className="info-tag">Similar colors</p>}
           <section className="flex-container flex-strech">
             {this.state.colorPalette.map((color, i)=>{
-              return (<div className="color-palette-swatch" key={i} style={{backgroundColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`}} />)
+              return (<div className="color-palette-swatch" key={i} style={{backgroundColor: `#${color}`}} />)
             })}
             {console.log(this.state.colorPalette)}
           </section>

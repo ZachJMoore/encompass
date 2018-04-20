@@ -55,27 +55,38 @@ class Camera extends Component{
                     image: image,
                     rgb: rgb,
                     rgbText: `(${rgb.r}, ${rgb.g}, ${rgb.b})`,
-                    hexText: `#${rgbToHex(r, g, b)}`
+                    hexText: `${rgbToHex(r, g, b)}`
                 };
             }
             let imageData = image()
 
             console.log(imageData)
 
-            let rgb = imageData.rgb
-            this.props.getColorMindPalette(rgb.r, rgb.g, rgb.b)
+            this.props.getPalette(imageData.hexText)
             .then(data=>{
                 this.props.updateState({
                     imageData: imageData,
-                    colorPalette: data.result
+                    colorPalette: data
                 })
             })
             
         };
         this.scanner = ()=>{}
-        this.initCamera = ()=>{
+        this.startCameraZero = (scanner)=>{
+            Instascan.Camera.getCameras().then(function (cameras) {
+                if (cameras.length > 0) {
+                    console.log(cameras)
+                    scanner.start(cameras[0]);
+                } else {
+                    console.error('No cameras found.');
+                }
+            }).catch(function (e) {
+                console.error(e);
+            });
+        }
+        this.initCamera = (mirror, startCamera)=>{
             let self = this
-            let scanner = new Instascan.Scanner({video: this.refs.preview, captureImage: true});
+            let scanner = new Instascan.Scanner({video: this.refs.preview, captureImage: true, mirror: mirror});
             this.setState({scanner: scanner})
             this.scanner = scanner;
             scanner.addListener('scan', function (content) {
@@ -94,27 +105,25 @@ class Camera extends Component{
                     rgb: {r: rgb.r, g: rgb.g, b: rgb.b}
                   };
 
-                self.props.getColorMindPalette(rgb.r, rgb.g, rgb.b)
+                let rgbToHex = (r, g, b) => {
+                    if (r > 255 || g > 255 || b > 255)
+                        return "ffffff"
+                    return ((r << 16) | (g << 8) | b).toString(16);
+                }
+
+                self.props.getPalette(rgbToHex(rgb.r, rgb.g, rgb.b))
                 .then(data=>{
-                    self.props.updateState({imageData: imageData, colorPalette: data.result})
+                    self.props.updateState({imageData: imageData, colorPalette: data})
                 })
                 console.log(content);
             });
-            Instascan.Camera.getCameras().then(function (cameras) {
-                if (cameras.length > 0) {
-                    console.log(cameras)
-                    scanner.start(cameras[0]);
-                } else {
-                    console.error('No cameras found.');
-                }
-            }).catch(function (e) {
-                console.error(e);
-            });
+            startCamera(scanner)
         }
         this.switchCamera = ()=>{
             this.scanner.stop()
             let self = this
-            Instascan.Camera.getCameras().then(function (cameras) {
+            let toggleCamera = ()=>{
+               Instascan.Camera.getCameras().then(function (cameras) {
                 if (cameras.length > 0) {
                     console.log(cameras)
                     if(self.camera === 0 && cameras.length > 0){
@@ -127,13 +136,15 @@ class Camera extends Component{
                 } else {
                     console.error('No cameras found.');
                 }
-            }).catch(function (e) {
-                console.error(e);
-            });
+                }).catch(function (e) {
+                    console.error(e);
+                }); 
+            }
+            this.initCamera(false, toggleCamera)
         }
     }
     componentDidMount(){
-        this.initCamera();
+        this.initCamera(true, this.startCameraZero);
     }
 
     render(){
